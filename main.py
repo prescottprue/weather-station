@@ -1,6 +1,6 @@
 import time
-from modules.tempAndHumidity import getTempAndHumidity, dhtDevice
-from modules.snowDepth import getSnowDepth
+from tempAndHumidity import getTempAndHumidity, dhtDevice
+from snowDepth import getSnowDepth
 
 while True:
   try:
@@ -14,5 +14,5 @@ while True:
   except Exception as error:
       dhtDevice.exit()
       raise error
-  
+
   time.sleep(2.0)

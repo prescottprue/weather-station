@@ -8,6 +8,18 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 1. Temp/Humidity - DHT 11
 1. Snow Depth - Ultrasonic sensor (HC-SR04)
 
+## Getting Started
+
+1. Flash a new Raspberry Pi with raspbian
+1. SSH into the Pi (`pi@raspberrypi.local` unless you changed defaults)
+1. Install git, python, and pipenv `sudo apt-get install git build-essential python-dev pipenv libgpiod2`
+1. Install Maria DB:
+    ```bash
+    sudo apt-get install -y mariadb-server mariadb-client libmariadbclient-dev
+    ```
+1. Run `pipenv install`
+1. Run weather station `python3 ./weather-station/main.py`
+
 ## My Setup
 
 I'm currently using a Raspberry Pi 2 B, but the goal is to keep this generalized to any AMD platform running Linux
