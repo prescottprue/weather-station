@@ -1,11 +1,16 @@
 import time
+import database
 from tempAndHumidity import getTempAndHumidity, dhtDevice
 from snowDepth import getSnowDepth
 
+db = database.weather_database()
+
 while True:
   try:
-    getTempAndHumidity()
-    getSnowDepth()
+    temperature_f, humidity = getTempAndHumidity()
+    snowDepth = getSnowDepth()
+    db.insert(snowDepth, temperature_f, humidity)
+    print("after insert")
   except RuntimeError as error:
       # Errors happen fairly often, DHT's are hard to read, just keep going
       print(error.args[0])

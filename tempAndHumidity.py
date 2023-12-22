@@ -13,3 +13,4 @@ def getTempAndHumidity():
           temperature_f, temperature_c, humidity
       )
   )
+  return temperature_f, humidity

@@ -15,9 +15,28 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 1. Install git, python, and pipenv `sudo apt-get install git build-essential python-dev pipenv libgpiod2`
 1. Install Maria DB:
     ```bash
-    sudo apt-get install -y mariadb-server mariadb-client libmariadbclient-dev
+    sudo apt-get install -y mariadb-server libmariadb-dev-compat libmariadb-dev
+    sudo pip3 install mysqlclient
     ```
 1. Run `pipenv install`
+1. Setup SQL Database
+    ```
+    sudo mysql
+    ```
+
+    ```sql
+    create user pi IDENTIFIED by 'my54cr4t';
+    grant all privileges on *.* to 'pi' with grant option;
+    use weather;
+    CREATE TABLE WEATHER_MEASUREMENT(
+      ID BIGINT NOT NULL AUTO_INCREMENT,
+      REMOTE_ID BIGINT,
+      AMBIENT_TEMPERATURE DECIMAL(6,2) NOT NULL,
+      HUMIDITY DECIMAL(6,2) NOT NULL,
+      CREATED TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY ( ID )
+    );
+    ```
 1. Run weather station `python3 ./weather-station/main.py`
 
 ## My Setup
