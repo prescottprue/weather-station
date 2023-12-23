@@ -10,6 +10,6 @@ def getSnowDepth():
   return snowDepth
 
 def outOfRange():
-    print("Snow depth out of range")
+  print("Snow depth out of range")
 
 ultrasonic.when_out_of_range = outOfRange

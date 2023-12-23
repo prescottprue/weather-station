@@ -33,6 +33,7 @@ DIY weather station and property monitoring (built for Raspberry Pi)
       REMOTE_ID BIGINT,
       AMBIENT_TEMPERATURE DECIMAL(6,2) NOT NULL,
       HUMIDITY DECIMAL(6,2) NOT NULL,
+      SNOW_DEPTH DECIMAL(6,2),
       CREATED TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY ( ID )
     );

@@ -7,7 +7,7 @@ while True:
   try:
     temperature_f, humidity = getTempAndHumidity()
     snowDepth = getSnowDepth()
-    writeWeather(temperature_f, humidity)
+    writeWeather(temperature_f, humidity, snowDepth)
   except RuntimeError as error:
     # Errors happen fairly often, DHT's are hard to read, just keep going
     print(error.args[0])

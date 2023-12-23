@@ -20,13 +20,13 @@ except mariadb.Error as e:
 # Close database connection on exit
 atexit.register(conn.close)
 
-def writeWeather(temperature_f, humidity):
+def writeWeather(temperature_f, humidity, snowDepth):
   try:
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    "INSERT INTO WEATHER_MEASUREMENT (AMBIENT_TEMPERATURE,HUMIDITY) VALUES (?, ?)",
-    (temperature_f, humidity))
+    "INSERT INTO WEATHER_MEASUREMENT (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
+    (temperature_f, humidity, snowDepth))
     conn.commit() 
     print(f"Last Inserted ID: {cur.lastrowid}")
   except mariadb.Error as e:
