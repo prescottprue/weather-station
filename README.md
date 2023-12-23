@@ -16,10 +16,10 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 1. Install Maria DB:
     ```bash
     sudo apt-get install -y mariadb-server libmariadb-dev-compat libmariadb-dev
-    sudo pip3 install mysqlclient
+    sudo pip3 install mariadb
     ```
 1. Run `pipenv install`
-1. Setup SQL Database
+1. Setup SQL Database with table
     ```
     sudo mysql
     ```
@@ -45,13 +45,16 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 I'm currently using a Raspberry Pi 2 B, but the goal is to keep this generalized to any AMD platform running Linux
 
 ## Plans
+
 1. Wind speed/direction
 1. Rain Sensor
-1. Local storage of data coming from sensors
 1. 4G modem for remote connectivity
-1. Ability to expose data to HomeAssistant running in a different location (most likely Tailscale)
+1. Ability to expose data to HomeAssistant running in a different location (possibly RealVNC and/or Tailscale)
+1. Camera
+1. Motion sensor
 
 ## References
+
 * [Raspberry Pi Org Weather station project](https://projects.raspberrypi.org/en/projects/build-your-own-weather-station) - main reference for organization and data storage. Doesn't include networking or extra sensors.
 * [Raspberry Pi Org Distance Sensor project](https://projects.raspberrypi.org/en/projects/physical-computing/12)
-
+* [DHT11 Interfacing with Raspberry Pi](https://www.electronicwings.com/raspberry-pi/dht11-interfacing-with-raspberry-pi)
