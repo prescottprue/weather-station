@@ -1,21 +1,17 @@
-import time
-from tempAndHumidity import getTempAndHumidity, dhtDevice
-from snowDepth import getSnowDepth
-from db import writeWeather, conn
+import uvicorn
+from fastapi import FastAPI
+from db import readWeather
 
-while True:
-  try:
-    temperature_f, humidity = getTempAndHumidity()
-    snowDepth = getSnowDepth()
-    writeWeather(temperature_f, humidity, snowDepth)
-  except RuntimeError as error:
-    # Errors happen fairly often, DHT's are hard to read, just keep going
-    print(error.args[0])
-    time.sleep(2.0)
-    continue
-  except Exception as error:
-    dhtDevice.exit()
-    conn.close()
-    raise error
+app = FastAPI()
 
-  time.sleep(2.0)
+@app.get("/")
+def read_root():
+  return {"Hello": "World"}
+
+# TODO: Add auth header
+@app.get("/measurements")
+def read_item():
+  return readWeather()
+
+if __name__ == "__main__":
+  uvicorn.run("main:app", port=8080, log_level="info")

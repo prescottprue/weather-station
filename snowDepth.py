@@ -1,6 +1,5 @@
 from gpiozero import DistanceSensor
 
-
 maxDistance = 1.5
 ultrasonic = DistanceSensor(echo=17, trigger=27, max_distance=maxDistance)
 

@@ -27,7 +27,7 @@ def writeWeather(temperature_f, humidity, snowDepth):
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    "INSERT INTO {tableName} (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
+    f"INSERT INTO {tableName} (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
     (temperature_f, humidity, snowDepth))
     conn.commit() 
     print(f"Last Inserted ID: {cur.lastrowid}")
@@ -37,5 +37,5 @@ def writeWeather(temperature_f, humidity, snowDepth):
 def readWeather():
   # Get Cursor
   cur = conn.cursor()
-  cur.execute("SELECT * FROM weather.{tableName} ORDER BY CREATED")
+  cur.execute(f"SELECT * FROM weather.{tableName} ORDER BY CREATED")
   return cur
