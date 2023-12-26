@@ -37,4 +37,11 @@ def writeWeather(temperature_f, humidity, snowDepth):
 def readWeather():
   # Get Cursor
   cur = conn.cursor()
-  return cur.execute(f"SELECT * FROM weather.{tableName} ORDER BY CREATED")
+  # Initialize Variables
+  measurements = []
+  cur.execute(f"SELECT ID,AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH,CREATED FROM {tableName} ORDER BY CREATED DESC")
+  for (id, temperature_f, humidity, snowDepth, created) in cur:
+    print(f"Temp: {temperature_f}, humidity: {humidity}")
+    measurements.append({ "id": id, "temp": temperature_f, "humidity": humidity, "snowDepth": snowDepth, "created": created })
+  cur.close()
+  return measurements
