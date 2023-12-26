@@ -3,6 +3,8 @@ import os
 import sys
 import atexit
 
+tableName="WEATHER_MEASUREMENT"
+
 # Connect to MariaDB Platform
 try:
   conn = mariadb.connect(
@@ -25,9 +27,15 @@ def writeWeather(temperature_f, humidity, snowDepth):
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    "INSERT INTO WEATHER_MEASUREMENT (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
+    "INSERT INTO {tableName} (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
     (temperature_f, humidity, snowDepth))
     conn.commit() 
     print(f"Last Inserted ID: {cur.lastrowid}")
   except mariadb.Error as e:
     print(f"Error: {e}")
+
+def readWeather():
+  # Get Cursor
+  cur = conn.cursor()
+  cur.execute("SELECT * FROM weather.{tableName} ORDER BY CREATED")
+  return cur

@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 adafruit-circuitpython-dht = "*"
 gpiozero = "*"
+mariadb = "*"
+fastapi = "*"
+"uvicorn[standard]" = "*"
 
 [dev-packages]
 
