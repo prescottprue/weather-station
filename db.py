@@ -38,4 +38,4 @@ def readWeather():
   # Get Cursor
   cur = conn.cursor()
   cur.execute(f"SELECT * FROM weather.{tableName} ORDER BY CREATED")
-  return cur
+  return cur.fetchAll()
