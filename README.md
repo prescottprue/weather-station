@@ -26,9 +26,9 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 
     ```sql
     create user pi IDENTIFIED by 'my54cr4t';
+    CREATE DATABASE weather
     grant all privileges on *.* to 'pi' with grant option;
-    use weather;
-    CREATE TABLE WEATHER_MEASUREMENT(
+    CREATE TABLE weather.WEATHER_MEASUREMENT(
       ID BIGINT NOT NULL AUTO_INCREMENT,
       REMOTE_ID BIGINT,
       AMBIENT_TEMPERATURE DECIMAL(6,2) NOT NULL,

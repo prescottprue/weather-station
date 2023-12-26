@@ -37,5 +37,4 @@ def writeWeather(temperature_f, humidity, snowDepth):
 def readWeather():
   # Get Cursor
   cur = conn.cursor()
-  cur.execute(f"SELECT * FROM weather.{tableName} ORDER BY CREATED")
-  return cur.fetchAll()
+  return cur.execute(f"SELECT * FROM weather.{tableName} ORDER BY CREATED")
