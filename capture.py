@@ -18,4 +18,5 @@ while True:
     conn.close()
     raise error
 
-  time.sleep(2.0)
+  # Capture every 2 mins
+  time.sleep(120.0)

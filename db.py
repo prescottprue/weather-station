@@ -31,17 +31,17 @@ def writeWeather(temperature_f, humidity, snowDepth):
     (temperature_f, humidity, snowDepth))
     conn.commit() 
     print(f"Last Inserted ID: {cur.lastrowid}")
+    cur.close()
   except mariadb.Error as e:
     print(f"Error: {e}")
 
 def readWeather():
   # Get Cursor
   cur = conn.cursor()
-  # Initialize Variables
   measurements = []
-  cur.execute(f"SELECT ID,AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH,CREATED FROM {tableName} ORDER BY CREATED DESC")
+  cur.execute(f"SELECT ID,AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH,CREATED FROM {tableName} ORDER BY ID DESC LIMIT 100")
+  # Fill measurements array with objects
   for (id, temperature_f, humidity, snowDepth, created) in cur:
-    print(f"Temp: {temperature_f}, humidity: {humidity}")
     measurements.append({ "id": id, "temp": temperature_f, "humidity": humidity, "snowDepth": snowDepth, "created": created })
   cur.close()
   return measurements
