@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import mariadb
 import os
 import sys
@@ -27,17 +30,18 @@ def writeMeasurement(temperature_f, humidity, snowDepth):
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    f"INSERT INTO {tableName} (AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH) VALUES (?, ?, ?)",
+    f"INSERT INTO {tableName} (ambient_temperature,humidity,snow_depth) VALUES (?, ?, ?)",
     (temperature_f, humidity, snowDepth))
     conn.commit() 
-    print(f"Last Inserted ID: {cur.lastrowid}")
+    print(f"Inserted new measurement: {cur.lastrowid}")
     cur.close()
   except mariadb.Error as e:
     print(f"Error: {e}")
 
 def listMeasurements():
   cur = conn.cursor(dictionary=True) # So fetchall returns list of objects
-  cur.execute(f"SELECT ID,AMBIENT_TEMPERATURE,HUMIDITY,SNOW_DEPTH,CREATED FROM {tableName} ORDER BY ID DESC LIMIT 100")
+  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 10")
   measurements = cur.fetchall()
+  conn.commit()
   cur.close()
   return measurements
