@@ -2,6 +2,11 @@
 
 DIY weather station and property monitoring (built for Raspberry Pi)
 
+## Features
+* Capturing of Temperature, Humidity, and Snow Depth - stored in MySQL instance
+* Simple REST API for exposing captured values is great for exposing to tools like HomeAssistant (with docs about usage through VPN)
+* Capture and API set up as two separate systemd services to run in the background on boot
+
 ## Hardware
 
 1. AMD based Linux machine such as Raspberry Pi (specs to come later)
@@ -12,23 +17,17 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 
 1. Flash a new Raspberry Pi with raspbian
 1. SSH into the Pi (i.e. `ssh pi@raspberrypi.local` unless you changed defaults)
+1. Install git, python, and pipenv `sudo apt-get install git build-essential python3 pipenv libgpiod2`
 1. Clone repo `git clone https://github.com/prescottprue/weather-station`
-1. Create a new `.env` file containing DB password: `echo "MARIADB_PASS=mydbpass" > /home/pi/weather-station/.env`
-1. Install git, python, and pipenv `sudo apt-get install git build-essential python-dev pipenv libgpiod2`
 1. Install Maria DB:
     ```bash
-    sudo apt-get install -y mariadb-server libmariadb-dev-compat libmariadb-dev
-    sudo pip3 install mariadb
+    sudo apt-get install -y mariadb-server
     ```
-1. Run `pipenv install`
-1. Setup SQL Database with table
-    ```
-    sudo mysql
-    ```
+1. Setup user with privileges, create `weather` database, and create `measurements` table:
 
     ```sql
     create user pi IDENTIFIED by 'mydbpass';
-    CREATE DATABASE weather
+    CREATE DATABASE weather;
     grant all privileges on *.* to 'pi' with grant option;
     CREATE TABLE weather.measurements(
       id BIGINT NOT NULL AUTO_INCREMENT,
@@ -40,18 +39,21 @@ DIY weather station and property monitoring (built for Raspberry Pi)
       PRIMARY KEY ( id )
     );
     ```
-1. To test, run API using: `python3 ./weather-station/main.py`
+1. Run `pipenv install` to install dependencies
+1. Create a new `.env` file containing DB password you chose above: `echo "MARIADB_PASS=mydbpass" > /home/pi/weather-station/.env`
+1. To test, run API using: `pipenv run ./weather-station/main.py`
 1. Setup and start services to run capture + API in background on boot:
     1. Copy service files into systemd folders: `cp /home/pi/weather-station/capture.service /etc/systemd/system/capture.service`
     1. Reload the daemon: `sudo systemctl daemon-reload`
     1. Enable services: `sudo systemctl enable capture.service && sudo systemctl enable api.service`
     1. Start services: `sudo systemctl start capture.service && sudo systemctl start api.service`
 
-
 ## Home Assistant
+Weather station data is exposed in a REST API - this makes it easy for tools like HomeAssistant to connect and pull data. **NOTE:** If you are running your weather station on a different network than you home assistant instance, you will need to setup Tailscale (super easy - see section below)
+
 Use the File Editor to modify your `/homeassistant/configuration.yaml` file to add the following:
 
-**NOTE**: `$LOCAL_IP` is the local IP address of the weather station machine (raspberry pi) - this can be found by running `ifconfig` within ssh 
+**NOTE**: `$LOCAL_IP` is the local IP address of the weather station machine (raspberry pi) - this can be found by running `ifconfig` within ssh. If you are running Tailscale VPN, this should instead be your device's tailnet URL or IP.
 
 ```yaml
 rest:
@@ -84,18 +86,26 @@ rest:
 
 ```
 
+## Remote Network
+If you plan to have your weather station on a different network (such as my situation which is a property which does not yet have internet planned to use 4G hat on PI) you can access weather-station data by setting up a VPN. I suggest Tailscale since it is so easy to set up 
+
+Make sure you are SSHed into your weather-station then do the following:
+
+1. Install tailscale: `curl -fsSL https://tailscale.com/install.sh | sh`
+1. Start tailscale with ssh enabled `tailscale up --ssh`
+
 ## My Setup
 
-I'm currently using a Raspberry Pi 2 B, but the goal is to keep this generalized to any AMD platform running Linux
+I'm currently using a Raspberry Pi 4 since I plan to add a 4G Hat, but the goal is to keep most of the project generalized to any AMD platform running Linux
 
 ## Plans
 
 1. Wind speed/direction
 1. Rain Sensor
 1. 4G modem for remote connectivity
-1. Ability to expose data to HomeAssistant running in a different location (possibly RealVNC and/or Tailscale)
 1. Camera
 1. Motion sensor
+1. Publishing/sharing to weather authority
 
 ## References
 
