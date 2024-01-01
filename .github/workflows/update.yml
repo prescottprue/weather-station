@@ -20,7 +20,6 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-          args: --ssh
 
       - name: Update and restart services
         env:
@@ -30,5 +29,5 @@ jobs:
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
             git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
             echo 'MARIADB_PASS=$MARIADB_PASS' > /home/pi/weather-station/.env
-            sudo systemctl restart capture.service && sudo systemctl restart api.service
+            sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
           "

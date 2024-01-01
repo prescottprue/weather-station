@@ -10,20 +10,17 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 
 ## Hardware
 
-1. AMD based Linux machine such as Raspberry Pi
+1. AMD based Linux Debian machine such as Raspberry Pi
 1. Temp/Humidity - DHT 11
 1. Snow Depth - Ultrasonic sensor (HC-SR04)
 
 ## Setup
 
-1. Flash a new Raspberry Pi with raspbian
+1. Flash linux machine planned for the weather-station (in my case Raspberry Pi) with a Debian version of linux (NOT Bookworm)
 1. SSH into the Pi (i.e. `ssh pi@raspberrypi.local` unless you changed defaults)
-1. Install git, python, and pipenv `sudo apt-get install git build-essential python3 pipenv libgpiod2`
+1. Install dependencies inluding git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server`
 1. Clone repo `git clone https://github.com/prescottprue/weather-station`
-1. Install Maria DB:
-    ```bash
-    sudo apt-get install -y mariadb-server
-    ```
+1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht gpiozero mariadb fastapi "uvicorn[standard]"`
 1. Setup user with privileges, create `weather` database, and create `measurements` table:
 
     ```sql
@@ -40,14 +37,13 @@ DIY weather station and property monitoring (built for Raspberry Pi)
       PRIMARY KEY ( id )
     );
     ```
-1. Run `pipenv install` to install dependencies
-1. Create a new `.env` file containing DB password you chose above: `echo "MARIADB_PASS=mydbpass" > /home/pi/weather-station/.env`
-1. To test, run API using: `pipenv run ./weather-station/main.py`
+1. To test, run API using: `MARIADB_PASS=mydbpass pipenv run ./weather-station/main.py`
 1. Setup and start services to run capture + API in background on boot:
-    1. Copy service files into systemd folders: `cp /home/pi/weather-station/capture.service /etc/systemd/system/capture.service`
+    1. Write a file containing DB password you picked above (note `tee` is to prevent permission issues): `echo "MARIADB_PASS=mydbpass" | sudo tee -a /etc/environment >/dev/null`
+    1. Copy service files into systemd folders: `sudo cp /home/pi/weather-station/services/weather-capture.service /etc/systemd/system/weather-capture.service && sudo cp /home/pi/weather-station/services/weather-api.service /etc/systemd/system/weather-api.service`
     1. Reload the daemon: `sudo systemctl daemon-reload`
-    1. Enable services: `sudo systemctl enable capture.service && sudo systemctl enable api.service`
-    1. Start services: `sudo systemctl start capture.service && sudo systemctl start api.service`
+    1. Enable services: `sudo systemctl enable weather-capture.service && sudo systemctl enable weather-api.service`
+    1. Start services: `sudo systemctl start weather-capture.service && sudo systemctl start weather-api.service`
 
 ### Github Actions
 To set up your weather-station code to update automatically when you push changes:
@@ -128,6 +124,8 @@ I'm currently using a Raspberry Pi 4 since I plan to add a 4G Hat, but the goal 
 1. Camera
 1. Motion sensor
 1. Publishing/sharing to weather authority
+1. Support Bookworm OS version by using python virtual env
+1. Pipenv or similar for dependency management
 
 ## References
 

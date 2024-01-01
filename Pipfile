@@ -8,7 +8,6 @@ adafruit-circuitpython-dht = "*"
 gpiozero = "*"
 mariadb = "*"
 fastapi = "*"
-dotenv = "*"
 "uvicorn[standard]" = "*"
 
 [dev-packages]

@@ -4,6 +4,7 @@ After=multi-user.target
 [Service]
 Type=simple
 User=pi
+EnvironmentFile=/etc/environment
 ExecStart=/usr/bin/python3 /home/pi/weather-station/capture.py
 [Install]
 WantedBy=multi-user.target
