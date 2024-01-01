@@ -18,25 +18,30 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 
 1. Flash linux machine planned for the weather-station (in my case Raspberry Pi) with a Debian version of linux (NOT Bookworm)
 1. SSH into the Pi (i.e. `ssh pi@raspberrypi.local` unless you changed defaults)
-1. Install dependencies inluding git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server`
+1. Install dependencies inluding git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server mariadb-client libmariadb-dev`
 1. Clone repo `git clone https://github.com/prescottprue/weather-station`
 1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht gpiozero mariadb fastapi "uvicorn[standard]"`
-1. Setup user with privileges, create `weather` database, and create `measurements` table:
+1. Setup MySQL instance:
+    1. Setup user with privileges:
 
-    ```sql
-    create user pi IDENTIFIED by 'mydbpass';
-    CREATE DATABASE weather;
-    grant all privileges on *.* to 'pi' with grant option;
-    CREATE TABLE weather.measurements(
-      id BIGINT NOT NULL AUTO_INCREMENT,
-      remote_id BIGINT,
-      ambient_temperature DECIMAL(6,2) NOT NULL,
-      humidity DECIMAL(6,2) NOT NULL,
-      snow_depth DECIMAL(6,2),
-      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY ( id )
-    );
-    ```
+        ```sql
+        create user pi IDENTIFIED by 'mydbpass';
+        grant all privileges on *.* to 'pi' with grant option;
+        ````
+    1. Create `weather` database and measurements table:
+
+        ```sql
+        CREATE DATABASE weather;
+        CREATE TABLE weather.measurements(
+          id BIGINT NOT NULL AUTO_INCREMENT,
+          remote_id BIGINT,
+          ambient_temperature DECIMAL(6,2) NOT NULL,
+          humidity DECIMAL(6,2) NOT NULL,
+          snow_depth DECIMAL(6,2),
+          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY ( id )
+        );
+        ```
 1. To test, run API using: `MARIADB_PASS=mydbpass pipenv run ./weather-station/main.py`
 1. Setup and start services to run capture + API in background on boot:
     1. Write a file containing DB password you picked above (note `tee` is to prevent permission issues): `echo "MARIADB_PASS=mydbpass" | sudo tee -a /etc/environment >/dev/null`

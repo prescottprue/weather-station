@@ -11,9 +11,6 @@ jobs:
   update-weather-station:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -25,9 +22,9 @@ jobs:
         env:
           TAILNET_ADDESS: ${{ secrets.WEATHER_STATION_TAILNET_ADDRESS }}
           MARIADB_PASS: ${{ secrets.MARIADB_PASS }}
+        # TODO: Call sudo systemctl daemon-reload if service files have changed
         run: |
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
-            git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
-            echo 'MARIADB_PASS=$MARIADB_PASS' > /home/pi/weather-station/.env
+            cd weather-station && git fetch
             sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
           "

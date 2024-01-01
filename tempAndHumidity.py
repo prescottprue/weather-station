@@ -1,7 +1,7 @@
 import board
 import adafruit_dht
 
-dhtDevice = adafruit_dht.DHT11(board.D4, use_pulseio=True)
+dhtDevice = adafruit_dht.DHT11(board.D4, use_pulseio=False)
 
 def getTempAndHumidity():
   # Print the values to the serial port
