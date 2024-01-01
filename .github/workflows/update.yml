@@ -27,4 +27,6 @@ jobs:
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
             cd weather-station && git fetch
             sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
+            echo 'Restart command complete'
           "
+          echo "Update complete"

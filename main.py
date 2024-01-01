@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-  return {"status": "active"}
+  return {"status": "active", "version": "1.0.0"}
 
 # TODO: Add auth header
 @app.get("/measurements")
