@@ -1,0 +1,34 @@
+name: Update weather-station
+
+on:
+  push:
+    branches:
+      - main
+      - next
+      - alpha
+
+jobs:
+  update-weather-station:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --ssh
+
+      - name: Update and restart services
+        env:
+          TAILNET_ADDESS: ${{ secrets.WEATHER_STATION_TAILNET_ADDRESS }}
+          MARIADB_PASS: ${{ secrets.MARIADB_PASS }}
+        run: |
+          ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
+            git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+            echo 'MARIADB_PASS=$MARIADB_PASS' > /home/pi/weather-station/.env
+            sudo systemctl restart capture.service && sudo systemctl restart api.service
+          "

@@ -6,10 +6,11 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 * Capturing of Temperature, Humidity, and Snow Depth - stored in MySQL instance
 * Simple REST API for exposing captured values is great for exposing to tools like HomeAssistant (with docs about usage through VPN)
 * Capture and API set up as two separate systemd services to run in the background on boot
+* Github Actions Workflow for automatically publishing changes to weather station (leveraging [Tailscale's Github Action](https://github.com/tailscale/github-action) to dynamically create nodes marked as ephemeral)
 
 ## Hardware
 
-1. AMD based Linux machine such as Raspberry Pi (specs to come later)
+1. AMD based Linux machine such as Raspberry Pi
 1. Temp/Humidity - DHT 11
 1. Snow Depth - Ultrasonic sensor (HC-SR04)
 
@@ -47,6 +48,27 @@ DIY weather station and property monitoring (built for Raspberry Pi)
     1. Reload the daemon: `sudo systemctl daemon-reload`
     1. Enable services: `sudo systemctl enable capture.service && sudo systemctl enable api.service`
     1. Start services: `sudo systemctl start capture.service && sudo systemctl start api.service`
+
+### Github Actions
+To set up your weather-station code to update automatically when you push changes:
+
+1. Fork this repo
+1. Follow section below about setup of Tailscale
+1. Add the following to Tailscale Access Controls:
+
+    ```json
+      "tagOwners": {
+        "tag:ci": [],
+      },
+    ```
+1. Add a Tailscale oAuth client with `tag:ci` - client id and secret which appear will be saved in next step
+1. Set the following values within Github Actions Secrets (Settings tab of repo):
+    ```
+    TS_OAUTH_CLIENT_ID - Tailscale oauth client id
+    TS_OAUTH_SECRET - Tailscale oauth secert
+    MARIADB_PASS - password of mariadb user (set to env file)
+    WEATHER_STATION_TAILNET_ADDRESS - address of weather-station machine on tailnet
+    ```
 
 ## Home Assistant
 Weather station data is exposed in a REST API - this makes it easy for tools like HomeAssistant to connect and pull data. **NOTE:** If you are running your weather station on a different network than you home assistant instance, you will need to setup Tailscale (super easy - see section below)
