@@ -25,7 +25,7 @@ jobs:
         # TODO: Call sudo systemctl daemon-reload if service files have changed
         run: |
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
-            cd weather-station && git fetch
+            cd weather-station && git reset --hard origin/main
             sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
             echo 'Restart command complete'
           "
