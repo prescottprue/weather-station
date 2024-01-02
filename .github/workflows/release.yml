@@ -18,7 +18,7 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         id: semantic   # Need an `id` for output variables
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: '' # NPM Publish is skipped
 
       - name: Tailscale
