@@ -35,12 +35,12 @@ jobs:
         env:
           TAILNET_ADDESS: ${{ secrets.WEATHER_STATION_TAILNET_ADDRESS }}
           MARIADB_PASS: ${{ secrets.MARIADB_PASS }}
-          VERSION: ${{ steps.semantic.outputs.new_release_version }}
+          VERSION: ${{ steps.semantic.outputs.new_release_version || steps.semantic.outputs.last_release_version }}
         # TODO: Call sudo systemctl daemon-reload if service files have changed
         run: |
-          ssh -o "StrictHostKeyChecking no" -t pi@$TAILNET_ADDESS<<EOT
-          cd weather-station && git fetch && git reset --hard origin/main && echo VERSION=$VERSION > ./.env
-          sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
-          echo 'Restart command complete'
+          ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
+            cd weather-station && git fetch && git reset --hard origin/main && echo VERSION=$VERSION > ./.env
+            sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
+            echo 'Restart command complete'
+          "
           echo "Update complete"
-          EOT
