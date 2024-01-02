@@ -1,0 +1,9 @@
+{
+  "repositoryUrl": "https://github.com/prescottprue/weather-station",
+  "branches": ["main"],
+  "ci": false,
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator"
+  ]
+}

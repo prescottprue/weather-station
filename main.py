@@ -1,4 +1,5 @@
 import uvicorn
+import os
 from fastapi import FastAPI
 from db import listMeasurements
 
@@ -6,7 +7,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-  return {"status": "active", "version": "1.0.2"}
+  return {"status": "active", "version": os.environ.get('VERSION') or "0.0.0" }
 
 # TODO: Add auth header
 @app.get("/measurements")

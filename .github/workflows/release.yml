@@ -1,4 +1,4 @@
-name: Update weather-station
+name: Release weather-station
 
 on:
   push:
@@ -11,6 +11,16 @@ jobs:
   update-weather-station:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic   # Need an `id` for output variables
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          NPM_TOKEN: '' # NPM Publish is skipped
+
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -22,10 +32,11 @@ jobs:
         env:
           TAILNET_ADDESS: ${{ secrets.WEATHER_STATION_TAILNET_ADDRESS }}
           MARIADB_PASS: ${{ secrets.MARIADB_PASS }}
+          VERSION: ${{ steps.semantic.outputs.new_release_version }}
         # TODO: Call sudo systemctl daemon-reload if service files have changed
         run: |
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
-            cd weather-station && git fetch && git reset --hard origin/main
+            cd weather-station && git fetch && git reset --hard origin/main && echo VERSION=$VERSION > ./.env
             sudo systemctl restart weather-capture.service && sudo systemctl restart weather-api.service
             echo 'Restart command complete'
           "
