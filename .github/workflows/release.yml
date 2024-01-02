@@ -25,6 +25,7 @@ jobs:
           NPM_TOKEN: '' # NPM Publish is skipped
 
       - name: Tailscale
+        if: steps.semantic.outputs.new_release_published == 'true'
         uses: tailscale/github-action@v2
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -32,10 +33,12 @@ jobs:
           tags: tag:ci
 
       - name: Update and restart services
+        if: steps.semantic.outputs.new_release_published == 'true'
         env:
           TAILNET_ADDESS: ${{ secrets.WEATHER_STATION_TAILNET_ADDRESS }}
           MARIADB_PASS: ${{ secrets.MARIADB_PASS }}
-          VERSION: ${{ steps.semantic.outputs.new_release_version || steps.semantic.outputs.last_release_version }}
+          VERSION: ${{ steps.semantic.outputs.new_release_version }}
+          LAST_VERSION: ${{ steps.semantic.outputs.last_release_version }}
         # TODO: Call sudo systemctl daemon-reload if service files have changed
         run: |
           ssh -o "StrictHostKeyChecking no" pi@$TAILNET_ADDESS "
