@@ -37,16 +37,16 @@ def writeMeasurement(temperature_f, humidity, snowDepth):
 
 def listMeasurements():
   cur = conn.cursor(dictionary=True) # So fetchall returns list of objects
-  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 10")
+  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 10;")
   measurements = cur.fetchall()
-  conn.commit()
   cur.close()
+  conn.commit()
   return measurements
 
 def getLatestMeasurement():
   cur = conn.cursor(dictionary=True) # So fetchone returns objects
-  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 1")
-  measurements = cur.fetchone()
-  conn.commit()
+  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 1;")
+  latest = cur.fetchone()
   cur.close()
-  return measurements
+  conn.commit()
+  return latest

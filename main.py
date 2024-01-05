@@ -16,7 +16,7 @@ def read_item():
   return listMeasurements()
 
 @app.get("/latest")
-def read_item():
+def read_latest():
   return getLatestMeasurement()
 
 if __name__ == "__main__":
