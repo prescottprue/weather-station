@@ -18,10 +18,12 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 
 1. Flash linux machine planned for the weather-station (in my case Raspberry Pi) with a Debian version of linux (NOT Bookworm)
 1. SSH into the Pi (i.e. `ssh pi@raspberrypi.local` unless you changed defaults)
-1. Install dependencies inluding git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server mariadb-client libmariadb-dev`
+1. If you are using any hardware for remote connectivity such as the [Sixfab LTE hat](https://sixfab.com/product/raspberry-pi-4g-lte-modem-kit) - I've found it best to install this before any other dependencies. Follow setup instructions provided by manufacturer - otherwise skip this step.
+1. Install dependencies including git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server mariadb-client libmariadb-dev`
 1. Clone repo `git clone https://github.com/prescottprue/weather-station`
-1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht gpiozero mariadb fastapi "uvicorn[standard]"`
+1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht gpiozero mariadb fastapi "uvicorn[standard]" python-dotenv`
 1. Setup MySQL instance:
+    1. Run `sudo mysql` all following steps will be sql commands
     1. Setup user with privileges:
 
         ```sql
@@ -41,7 +43,8 @@ DIY weather station and property monitoring (built for Raspberry Pi)
           PRIMARY KEY ( id )
         );
         ```
-1. To test, run API using: `MARIADB_PASS=mydbpass python3 ./weather-station/main.py`
+    1. Hit `ctrl + c` to exit mysql
+1. To test API, run: `MARIADB_PASS=mydbpass python3 ./weather-station/main.py` then visit `http://raspberrypi.local:8080` (or whatever the local name or local ip address of your Pi)
 1. Setup and start services to run capture + API in background on boot:
     1. Write a file containing DB password you picked above (note `tee` is to prevent permission issues): `echo "MARIADB_PASS=mydbpass" | sudo tee -a /etc/environment >/dev/null`
     1. Copy service files into systemd folders: `sudo cp /home/pi/weather-station/services/weather-capture.service /etc/systemd/system/weather-capture.service && sudo cp /home/pi/weather-station/services/weather-api.service /etc/systemd/system/weather-api.service`
@@ -57,16 +60,39 @@ To set up your weather-station code to update automatically when you push change
 1. Add the following to Tailscale Access Controls:
 
     ```json
+    {
+      // Define the tags which can be applied to devices and by which users.
       "tagOwners": {
-        "tag:ci": [],
+        "tag:ci":   [],
+        "tag:prod": [],
       },
+      // Define users and devices that can use Tailscale SSH.
+      "ssh": [
+        // Allow all users to SSH into their own devices in check mode.
+        // Comment this section out if you want to define specific restrictions.
+        {
+          "action": "check",
+          "src":    ["autogroup:member"],
+          "dst":    ["autogroup:self"],
+          "users":  ["autogroup:nonroot", "root"],
+        },
+        // Allow all users and machines with tag:ci to ssh into machines with tag:prod (tag:ci used for machines which deploy from Github Actions)
+        {
+          "action": "accept",
+          "src":    ["autogroup:member", "tag:ci"],
+          "dst":    ["tag:prod"],
+          "users":  ["autogroup:nonroot", "root", "pi"],
+        },
+      ],
+    }
     ```
+
 1. Add a Tailscale oAuth client with `tag:ci` - client id and secret which appear will be saved in next step
 1. Set the following values within Github Actions Secrets (Settings tab of repo):
+
     ```
     TS_OAUTH_CLIENT_ID - Tailscale oauth client id
     TS_OAUTH_SECRET - Tailscale oauth secert
-    MARIADB_PASS - password of mariadb user (set to env file)
     WEATHER_STATION_TAILNET_ADDRESS - address of weather-station machine on tailnet
     ```
 
@@ -77,7 +103,8 @@ If you plan to have your weather station on a different network (such as my situ
 Make sure you are SSHed into your weather-station then do the following:
 
 1. Install tailscale: `curl -fsSL https://tailscale.com/install.sh | sh`
-1. Start tailscale with ssh enabled `tailscale up --ssh`
+1. Start tailscale with ssh enabled `sudo tailscale up --ssh --advertise-tags tag:prod`
+1. Approve machine in tailscale if needed and add the tag `prod`
 
 ## Home Assistant
 Weather station data is exposed in a REST API - this makes it easy for tools like HomeAssistant to connect and pull data. 

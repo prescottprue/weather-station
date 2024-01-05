@@ -1,7 +1,7 @@
 from gpiozero import DistanceSensor
 
 maxDistance = 1.5
-ultrasonic = DistanceSensor(echo=17, trigger=27, max_distance=maxDistance)
+ultrasonic = DistanceSensor(echo=23, trigger=24, max_distance=maxDistance)
 
 def getSnowDepth():
   # TODO: Subtract calibrated height instead of max
