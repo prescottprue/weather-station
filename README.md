@@ -34,15 +34,14 @@ DIY weather station and property monitoring (built for Raspberry Pi)
         CREATE DATABASE weather;
         CREATE TABLE weather.measurements(
           id BIGINT NOT NULL AUTO_INCREMENT,
-          remote_id BIGINT,
-          ambient_temperature DECIMAL(6,2) NOT NULL,
+          temp DECIMAL(6,2) NOT NULL,
           humidity DECIMAL(6,2) NOT NULL,
           snow_depth DECIMAL(6,2),
-          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY ( id )
         );
         ```
-1. To test, run API using: `MARIADB_PASS=mydbpass pipenv run ./weather-station/main.py`
+1. To test, run API using: `MARIADB_PASS=mydbpass python3 ./weather-station/main.py`
 1. Setup and start services to run capture + API in background on boot:
     1. Write a file containing DB password you picked above (note `tee` is to prevent permission issues): `echo "MARIADB_PASS=mydbpass" | sudo tee -a /etc/environment >/dev/null`
     1. Copy service files into systemd folders: `sudo cp /home/pi/weather-station/services/weather-capture.service /etc/systemd/system/weather-capture.service && sudo cp /home/pi/weather-station/services/weather-api.service /etc/systemd/system/weather-api.service`
@@ -71,43 +70,6 @@ To set up your weather-station code to update automatically when you push change
     WEATHER_STATION_TAILNET_ADDRESS - address of weather-station machine on tailnet
     ```
 
-## Home Assistant
-Weather station data is exposed in a REST API - this makes it easy for tools like HomeAssistant to connect and pull data. **NOTE:** If you are running your weather station on a different network than you home assistant instance, you will need to setup Tailscale (super easy - see section below)
-
-Use the File Editor to modify your `/homeassistant/configuration.yaml` file to add the following:
-
-**NOTE**: `$LOCAL_IP` is the local IP address of the weather station machine (raspberry pi) - this can be found by running `ifconfig` within ssh. If you are running Tailscale VPN, this should instead be your device's tailnet URL or IP.
-
-```yaml
-rest:
-  - resource: "http://$LOCAL_IP:8080/measurements"
-    sensor:
-      - name: "Station Temperature"
-        unique_id: station-temperature
-        value_template: "{{ value_json.0.ambient_temperature }}"
-        unit_of_measurement: "°F"
-        device_class: temperature
-
-      - name: "Station Humidity"
-        unique_id: station-humidity
-        value_template: "{{ value_json.0.humidity }}"
-        unit_of_measurement: "%"
-        device_class: humidity
-
-      - name: "Station Snow Depth"
-        unique_id: station-snow-depth
-        icon: mdi:snowflake
-        value_template: "{{ value_json.0.snow_depth }}"
-        unit_of_measurement: "in"
-        device_class: distance
-        
-      - name: "Station Last Capture"
-        unique_id: station-last-capture
-        icon: mdi:clock
-        value_template: "{{ as_datetime(value_json.0.created_at).astimezone() }}"
-        device_class: timestamp
-
-```
 
 ## Remote Network
 If you plan to have your weather station on a different network (such as my situation which is a property which does not yet have internet planned to use 4G hat on PI) you can access weather-station data by setting up a VPN. I suggest Tailscale since it is so easy to set up 
@@ -116,6 +78,57 @@ Make sure you are SSHed into your weather-station then do the following:
 
 1. Install tailscale: `curl -fsSL https://tailscale.com/install.sh | sh`
 1. Start tailscale with ssh enabled `tailscale up --ssh`
+
+## Home Assistant
+Weather station data is exposed in a REST API - this makes it easy for tools like HomeAssistant to connect and pull data. 
+
+Use the File Editor to modify your `/homeassistant/configuration.yaml` file to add the following:
+
+**NOTE**: `$LOCAL_IP` is the local IP address of the weather station machine (raspberry pi) - this can be found by running `ifconfig` within ssh. If you are running Tailscale VPN, this should instead be your device's tailnet URL or IP.
+
+```yaml
+rest:
+  # Replace $LOCAL_IP with local IP address of weather-station machine - if using Tailscale, this is Tailnet DNS entry or IP
+  - resource: "http://$LOCAL_IP:8080/latest"
+    sensor:
+      - name: "Station Temperature"
+        unique_id: station-temperature
+        value_template: "{{ value_json.temp }}"
+        unit_of_measurement: "°F"
+        device_class: temperature
+
+      - name: "Station Humidity"
+        unique_id: station-humidity
+        value_template: "{{ value_json.humidity }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+
+      - name: "Station Snow Depth"
+        unique_id: station-snow-depth
+        icon: mdi:snowflake
+        value_template: "{{ value_json.snow_depth }}"
+        unit_of_measurement: "in"
+        device_class: distance
+        
+      - name: "Station Last Capture"
+        unique_id: station-last-capture
+        icon: mdi:clock
+        value_template: "{{ as_datetime(value_json.created).astimezone() }}"
+        device_class: timestamp
+```
+
+### Remote Home Assistant
+
+If you are running your weather station on a different network than you home assistant instance, you will need to setup Tailscale on your weather-station machine (super easy - see [Remote Network section](#remote-network) above) as well as install [@tsujamin's Home Assistant Tailscale addon](https://github.com/tsujamin/hass-addons) (Tailscale addon in store did allow rest connection to access Tailnet).
+
+1. Go to Add On Store
+1. Click "Add Repository"
+1. Add `https://github.com/tsujamin/hass-addons` repo url
+1. Add "Tailscale" addon from under the `tsujamin's Add-ons` section
+1. Create a new auth key in Tailscale UI
+1. Set auth key from Tailscale UI in configuration panel of Tailscale addon and disable `userspace_networking` (this is important!)
+1. Save configuration then start Tailscale addon (and make sure `Start on boot` is enabled)
+
 
 ## My Setup
 
@@ -138,3 +151,4 @@ I'm currently using a Raspberry Pi 4 since I plan to add a 4G Hat, but the goal 
 * [Raspberry Pi Org Distance Sensor project](https://projects.raspberrypi.org/en/projects/physical-computing/12)
 * [DHT11 Interfacing with Raspberry Pi](https://www.electronicwings.com/raspberry-pi/dht11-interfacing-with-raspberry-pi)
 * [Setup Python script as a service through systemctl](https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267)
+* [@tsujamin's Home Assistant Tailscale addon](https://github.com/tsujamin/hass-addons)

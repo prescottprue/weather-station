@@ -27,7 +27,7 @@ def writeMeasurement(temperature_f, humidity, snowDepth):
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    f"INSERT INTO {tableName} (ambient_temperature,humidity,snow_depth) VALUES (?, ?, ?)",
+    f"INSERT INTO {tableName} (temp,humidity,snow_depth) VALUES (?, ?, ?)",
     (temperature_f, humidity, snowDepth))
     conn.commit() 
     print(f"Inserted new measurement: {cur.lastrowid}")
@@ -39,6 +39,14 @@ def listMeasurements():
   cur = conn.cursor(dictionary=True) # So fetchall returns list of objects
   cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 10")
   measurements = cur.fetchall()
+  conn.commit()
+  cur.close()
+  return measurements
+
+def getLatestMeasurement():
+  cur = conn.cursor(dictionary=True) # So fetchone returns objects
+  cur.execute(f"SELECT * FROM {tableName} ORDER BY ID DESC LIMIT 1")
+  measurements = cur.fetchone()
   conn.commit()
   cur.close()
   return measurements
