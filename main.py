@@ -23,7 +23,7 @@ def read_latest():
 
 @app.get("/image")
 async def read_image():
-  return FileResponse('/home/pi/latest.png')
+  return FileResponse('/home/pi/latest.jpg')
 
 if __name__ == "__main__":
   uvicorn.run("main:app", port=8080, host="0.0.0.0", log_level="info")
