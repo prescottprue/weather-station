@@ -184,6 +184,12 @@ I'm currently using a Raspberry Pi 4 since I plan to add a 4G Hat, but the goal 
 * Continue to capture data to machine's memory even if it is offline allowing for later review
 * Data pulling can be optimized for network conditions (not necessarily all captures will go over the network)
 
+### Libcamera through subprocess instead of a python lib?
+
+* For 64bit support it is easiest to go with libcamera - Picam2 is an option, but bumped into some issues getting it working
+* No in memory access to image is needed - we just render the most recent file
+
+
 ## References
 
 * [Raspberry Pi Org Weather station project](https://projects.raspberrypi.org/en/projects/build-your-own-weather-station) - main reference for organization and data storage. Doesn't include networking or extra sensors.

@@ -1,7 +1,7 @@
 import time
 from tempAndHumidity import getTempAndHumidity, dhtDevice
 from snowDepth import getSnowDepth
-from camera import capturePicture
+from camera import captureImage
 from db import writeMeasurement, conn
 
 while True:
@@ -9,7 +9,7 @@ while True:
     temperature_f, humidity = getTempAndHumidity()
     snowDepth = getSnowDepth()
     writeMeasurement(temperature_f, humidity, snowDepth)
-    capturePicture()
+    captureImage()
   except RuntimeError as error:
     # Errors happen fairly often, DHT's are hard to read, just keep going
     print(error.args[0])
@@ -20,5 +20,5 @@ while True:
     conn.close()
     raise error
 
-  # Capture every 2 mins
-  time.sleep(120.0)
+  # Capture every 5 mins
+  time.sleep(300.0)

@@ -17,13 +17,13 @@ def read_root():
 def read_item():
   return listMeasurements()
 
-@app.get("/latest")
+@app.get("/measurements/latest")
 def read_latest():
   return getLatestMeasurement()
 
-@app.get("/image")
-async def read_image():
-  return FileResponse('/home/pi/latest.jpg')
+@app.get("/images/latest")
+async def read_latest_image():
+  return FileResponse('/home/pi/images/latest.jpg')
 
 if __name__ == "__main__":
   uvicorn.run("main:app", port=8080, host="0.0.0.0", log_level="info")

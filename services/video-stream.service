@@ -1,0 +1,9 @@
+[Unit]
+Description=Camera video streaming
+After=multi-user.target
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/libcamera-vid libcamera-vid -t 0 -l -o tcp://0.0.0.0:3333 --vflip --hflip --framerate 8
+[Install]
+WantedBy=multi-user.target
