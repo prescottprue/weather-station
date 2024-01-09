@@ -7,12 +7,18 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 * Simple REST API for exposing captured values is great for exposing to tools like HomeAssistant (with docs about usage through VPN)
 * Capture and API set up as two separate systemd services to run in the background on boot
 * Github Actions Workflow for automatically publishing changes to weather station (leveraging [Tailscale's Github Action](https://github.com/tailscale/github-action) to dynamically create nodes marked as ephemeral)
+* Support for 4G modem for remote connectivity
 
 ## Hardware
 
 1. AMD based Linux Debian machine such as Raspberry Pi
 1. Temp/Humidity - DHT 11
 1. Snow Depth - Ultrasonic sensor (HC-SR04)
+1. Raspberry Pi Camera - [Arducam IMX 477](https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/12MP-IMX477/)
+
+### Not Required
+
+1. [Sixfax 4G LTE Modem Hat](https://sixfab.com/product/raspberry-pi-4g-lte-modem-kit)
 
 ## Setup
 
@@ -165,12 +171,18 @@ I'm currently using a Raspberry Pi 4 since I plan to add a 4G Hat, but the goal 
 
 1. Wind speed/direction
 1. Rain Sensor
-1. 4G modem for remote connectivity
 1. Camera
 1. Motion sensor
 1. Publishing/sharing to weather authority
 1. Support Bookworm OS version by using python virtual env
 1. Pipenv or similar for dependency management
+
+## Why
+
+### Capture on a cycle instead of on API call?
+
+* Continue to capture data to machine's memory even if it is offline allowing for later review
+* Data pulling can be optimized for network conditions (not necessarily all captures will go over the network)
 
 ## References
 

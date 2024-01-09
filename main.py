@@ -3,6 +3,8 @@ load_dotenv()
 import uvicorn
 import os
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+
 from db import listMeasurements,getLatestMeasurement
 
 app = FastAPI()
@@ -18,6 +20,10 @@ def read_item():
 @app.get("/latest")
 def read_latest():
   return getLatestMeasurement()
+
+@app.get("/image")
+async def read_image():
+  return FileResponse('/home/pi/latest.png')
 
 if __name__ == "__main__":
   uvicorn.run("main:app", port=8080, host="0.0.0.0", log_level="info")

@@ -1,16 +1,24 @@
 from gpiozero import DistanceSensor
 
-maxDistance = 1.5
-ultrasonic = DistanceSensor(echo=23, trigger=24, max_distance=maxDistance)
+ultrasonic = DistanceSensor(echo=23, trigger=24)
+# sensor resolution .005m (.5cm)
+calibrated_zero = 0.720
 
 def getSnowDepth():
   # TODO: Subtract calibrated height instead of max
-  snowDepth_m = maxDistance - ultrasonic.distance
   # Convert meters to inches
-  snowDepth = snowDepth_m / .3048 % 1 * 12
+  depth_m = round(calibrated_zero - ultrasonic.distance, 3)
+  if depth_m < 0.005:
+    snowDepth = 0
+  else:
+    snowDepth = (depth_m * 39.37) - 0.41
+  print('Distance', ultrasonic.distance)
   print('Snow depth is', snowDepth, 'in')
 
   return snowDepth
+
+def getSensorDepth():
+  return ultrasonic.distance
 
 def outOfRange():
   print("Snow depth out of range")
