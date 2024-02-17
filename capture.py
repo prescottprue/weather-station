@@ -1,5 +1,5 @@
 import time
-from tempAndHumidity import getTempAndHumidity, dhtDevice
+from tempAndHumidity import getInternalTempAndHumidity, getExternalTempAndHumidity, dhtDevice
 from snowDepth import getSnowDepth
 from camera import captureImage
 from db import writeMeasurement, conn
