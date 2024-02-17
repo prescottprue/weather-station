@@ -27,7 +27,7 @@ def writeMeasurement(temperature_f, humidity, internal_temperature_f, internal_h
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    f"INSERT INTO {tableName} (temp,humidity,internal_temp,internal_humidity,snow_depth) VALUES (?, ?, ?)",
+    f"INSERT INTO {tableName} (temp,humidity,internal_temperature_f,internal_humidity,snow_depth) VALUES (?, ?, ?)",
     (temperature_f, humidity, internal_temp, internal_humidity, snowDepth))
     conn.commit() 
     print(f"Inserted new measurement: {cur.lastrowid}")
