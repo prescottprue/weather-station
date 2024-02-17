@@ -27,7 +27,7 @@ DIY weather station and property monitoring (built for Raspberry Pi)
 1. If you are using any hardware for remote connectivity such as the [Sixfab LTE hat](https://sixfab.com/product/raspberry-pi-4g-lte-modem-kit) - I've found it best to install this before any other dependencies. Follow setup instructions provided by manufacturer - otherwise skip this step.
 1. Install dependencies including git, python, and maria db: `sudo apt-get install git build-essential python3 python3-pip libgpiod2 mariadb-server mariadb-client libmariadb-dev`
 1. Clone repo `git clone https://github.com/prescottprue/weather-station`
-1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht gpiozero mariadb fastapi "uvicorn[standard]" python-dotenv`
+1. Install python app dependencies: `pip3 install adafruit-blinka adafruit-circuitpython-dht adafruit-circuitpython-sht31d gpiozero mariadb fastapi "uvicorn[standard]" python-dotenv`
 1. Setup MySQL instance:
     1. Run `sudo mysql` all following steps will be sql commands
     1. Setup user with privileges:
@@ -44,6 +44,8 @@ DIY weather station and property monitoring (built for Raspberry Pi)
           id BIGINT NOT NULL AUTO_INCREMENT,
           temp DECIMAL(6,2) NOT NULL,
           humidity DECIMAL(6,2) NOT NULL,
+          internal_temp DECIMAL(6,2) NOT NULL,
+          internal_humidity DECIMAL(6,2) NOT NULL,
           snow_depth DECIMAL(6,2),
           created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY ( id )

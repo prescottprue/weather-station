@@ -6,9 +6,10 @@ from db import writeMeasurement, conn
 
 while True:
   try:
-    temperature_f, humidity = getTempAndHumidity()
+    internal_temperature_f, internal_humidity = getInternalTempAndHumidity()
+    temperature_f, humidity = getExternalTempAndHumidity()
     snowDepth = getSnowDepth()
-    writeMeasurement(temperature_f, humidity, snowDepth)
+    writeMeasurement(temperature_f, humidity, internal_temperature_f, internal_humidity, snowDepth)
     captureImage()
   except RuntimeError as error:
     # Errors happen fairly often, DHT's are hard to read, just keep going
