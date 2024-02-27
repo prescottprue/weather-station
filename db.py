@@ -22,13 +22,13 @@ except mariadb.Error as e:
 # Close database connection on exit
 atexit.register(conn.close)
 
-def writeMeasurement(temperature_f, humidity, internal_temperature_f, internal_humidity, snowDepth):
+def writeMeasurement(temp, humidity, internal_temp, internal_humidity, snowDepth):
   try:
     # Get Cursor
     cur = conn.cursor()
     cur.execute(
-    f"INSERT INTO {tableName} (temp,humidity,internal_temperature_f,internal_humidity,snow_depth) VALUES (?, ?, ?)",
-    (temperature_f, humidity, internal_temp, internal_humidity, snowDepth))
+    f"INSERT INTO {tableName} (temp,humidity,internal_temp,internal_humidity,snow_depth) VALUES (?, ?, ?, ?, ?)",
+    (temp, humidity, internal_temp, internal_humidity, snowDepth))
     conn.commit() 
     print(f"Inserted new measurement: {cur.lastrowid}")
     cur.close()

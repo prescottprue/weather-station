@@ -28,8 +28,4 @@ def getExternalTempAndHumidity():
   print("Humidity: %0.1f %%" % sensor.relative_humidity)
   humidity = sensor.relative_humidity
   temperature_f = sensor.temperature * (9 / 5) + 32
-
-  print(
-    "External Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(temperature_f, humidity)
-  )
   return temperature_f, sensor.relative_humidity
